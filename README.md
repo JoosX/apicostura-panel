@@ -38,6 +38,18 @@ No necesitas instalar Node.js, ejecutar `npm install`, configurar Google Sheets 
 
 ## Conectar al software original
 
+### Adaptarse primero al anfitrión
+
+El código entregado es una referencia funcional y visual, no una obligación de cambiar la arquitectura del software original. Antes de integrar, identificar su framework y versión, estructura de componentes y rutas, sistema de estilos, sesión, nombres de roles/sedes, API, base de datos y almacenamiento de archivos.
+
+- Si el anfitrión admite Web Components, se puede montar el componente directamente con el adaptador documentado abajo.
+- Si su arquitectura exige componentes nativos, portar la interfaz y los flujos al framework existente. Reutilizar sus servicios, formularios, navegación, manejo de errores y patrones de accesibilidad. Evitar mantener una segunda aplicación paralela.
+- Mapear sus roles, usuarios, sedes y modelo de datos al contrato del panel. No duplicar usuarios, autenticación o tablas ya existentes; crear migraciones solo cuando hagan falta.
+- Respetar su sistema de diseño, cabecera, menú y tamaños de pantalla. Conservar la identidad visual y los objetivos aprobados del panel, ajustando los detalles necesarios para que encaje en el producto.
+- No sustituir el backend, imponer Google Sheets, introducir un framework adicional ni cambiar versiones o dependencias del anfitrión solo para incorporar este módulo.
+
+La elección entre montar o portar debe quedar explicada por el integrador después de revisar el proyecto real. Los ejemplos siguientes muestran la opción Web Component; si se porta, el contrato sirve como referencia funcional y debe documentarse su correspondencia con los servicios reales.
+
 Incluye el script y monta el componente donde deba aparecer el panel:
 
 ```html
@@ -120,27 +132,33 @@ Integra esta sección dentro del software original aprovechando su sesión,
 sus permisos, backend, base de datos y almacenamiento de archivos. Conserva
 el diseño aprobado, la paleta, la decoración de hilo, los textos accesibles,
 la carga de foto y los flujos actuales. No conviertas la prueba en producción.
+Adapta la implementación a las tecnologías y convenciones del anfitrión;
+no obligues al software original a adoptar la arquitectura de este repositorio.
 
 ANTES DE MODIFICAR
 1. Lee README.md, docs/INTEGRACION.md y docs/GUIA_DE_USO.md.
 2. Inspecciona el proyecto anfitrión: framework, enrutamiento, sesión, roles,
    esquema de datos, endpoints y servicio de archivos. No inventes esas piezas.
-3. Revisa examples/prueba.html para entender los flujos. El código integrable
-   es src/apicostura-panel.js, un Web Component sin dependencias.
+3. Revisa examples/prueba.html para entender los flujos. src/apicostura-panel.js
+   es una implementación Web Component sin dependencias. Decide si conviene
+   montarlo directamente o portar sus flujos a componentes nativos del anfitrión.
+   Explica la elección y qué archivos, servicios y modelos existentes reutilizarás.
 4. Si falta información imprescindible o acceso al proyecto anfitrión,
    identifícalo expresamente antes de inventar una conexión simulada.
 
 IMPLEMENTACIÓN
-5. Monta <apicostura-panel> en la sección Panel de Control del anfitrión.
-   Carga src/apicostura-panel.js y llama a configure({session,adapter})
-   con el usuario real autenticado. Roles: Sede, Administrativo y Abastecedor.
+5. Integra en la sección Panel de Control existente. Si usas el Web Component,
+   monta <apicostura-panel>, carga src/apicostura-panel.js y llama a
+   configure({session,adapter}). Si lo portas, usa el framework y servicios
+   existentes con comportamiento equivalente. Usa el usuario real autenticado.
+   Mapea sus permisos a los roles Sede, Administrativo y Abastecedor.
    Para Sede incluye la sede autorizada; precarga nombre cuando esté disponible.
    Reemplaza la instancia al cambiar de usuario. No muestres selector de perfiles.
 6. Implementa las cuatro funciones asíncronas del adaptador siguiendo exactamente
    docs/INTEGRACION.md: listarPedidos, crearPedido, actualizarEstado y
    registrarCompras. Reutiliza los mecanismos de acceso a datos del anfitrión.
-7. Crea las tablas/colecciones y migraciones necesarias, ajustadas al backend
-   existente, para ID, fecha, sede, detalle, estado, solicitante, foto y
+7. Reutiliza las tablas/colecciones disponibles y crea solo las migraciones
+   necesarias, ajustadas al backend existente, para ID, fecha, sede, detalle, estado, solicitante, foto y
    No_Comprado. Guarda además el usuario y fecha de cada movimiento.
    Mantén los estados Pendiente, Comprado y Entregado.
 8. Aplica permisos también en servidor: una sede solo consulta/crea sus pedidos,
@@ -162,12 +180,16 @@ IMPLEMENTACIÓN
     resultados inciertos si se corta la conexión. Usa idempotencia para crear
     solicitudes y guardar movimientos. No muestres éxito antes de persistir.
     Si hace falta cambiar el contrato, actualiza código, documentación y pruebas.
-13. Si modificas la interfaz, edita examples/prueba.html y scripts/build.cjs
-    según corresponda; ejecuta npm run build y conserva los archivos generados.
-    No edites únicamente src/apicostura-panel.js porque se regenera.
+13. Si mantienes esta implementación, edita examples/prueba.html y
+    scripts/build.cjs según corresponda, ejecuta npm run build y conserva las
+    salidas. No edites únicamente src/apicostura-panel.js porque se regenera.
+    Si portas el panel, usa la estructura, estilos, compilación y pruebas del
+    anfitrión; no mantengas dos versiones operativas del mismo flujo.
 
 VALIDACIÓN Y ENTREGA
-14. Ejecuta npm run build, npm run check y npm test. No se requiere npm install.
+14. Para este módulo ejecuta npm run build, npm run check y npm test, sin npm
+    install. Para una adaptación nativa ejecuta además los comandos de validación
+    del anfitrión y documenta cómo se reproduce la comprobación.
 15. Añade y ejecuta pruebas de integración reales contra tu backend y navegador:
     solicitud con foto, compra parcial, No conseguí, entrega, aislamiento entre
     sedes, permisos de fotos, recarga, errores de red y reintentos sin duplicados.
