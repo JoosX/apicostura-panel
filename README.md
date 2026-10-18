@@ -4,6 +4,17 @@ Módulo de pedidos de materiales entre sedes. Desarrollado con HTML, CSS y JavaS
 
 **Este repositorio entrega el frontend y el contrato de integración.** El equipo del software anfitrión conecta autenticación, usuarios, base de datos y almacenamiento de fotos. Clonar el código no habilita esas conexiones automáticamente.
 
+## Qué abrir según lo que necesitas
+
+| Necesidad | Archivo |
+| --- | --- |
+| Mostrar el panel y probar pedidos, fotos, compras y entregas | `examples/prueba.html` |
+| Exponer el aporte del panel en 65–75 segundos | `apicostura-hackaton.html` |
+| Leer el guion de esas cuatro diapositivas | [GUION_HACKATON.md](GUION_HACKATON.md) |
+| Conectar el panel al sistema original | `src/apicostura-panel.js` y [docs/INTEGRACION.md](docs/INTEGRACION.md) |
+
+`index.html` es el montaje de integración: sin adaptador muestra controles desactivados. Para una revisión funcional usa `examples/prueba.html`. El material de exposición es independiente del módulo y no debe confundirse con pedidos reales.
+
 ## Revisar el funcionamiento antes de integrar
 
 ```sh
@@ -35,6 +46,25 @@ No necesitas instalar Node.js, ejecutar `npm install`, configurar Google Sheets 
 | `docs/GUIA_DE_USO.md` | Guía breve para el personal. |
 | `scripts/build.cjs` | Regenera el módulo y la página de montaje desde la vista de revisión. |
 | `tests/` | Comprobaciones de lógica con DOM simulado. |
+| `apicostura-hackaton.html` | Presentación autónoma con foto integrada, cuatro diapositivas y ejemplo interactivo. |
+| `GUION_HACKATON.md` | Guion breve del bloque del panel. |
+| `CHANGELOG.md` | Resumen de cambios de la entrega. |
+
+## Presentación y regreso al anfitrión
+
+Abre `apicostura-hackaton.html` con doble clic. Funciona sin internet: imagen, estilos y lógica están incluidos. Usa las flechas para avanzar, **Guion** para ver las notas y **Pantalla completa** para exponer. La tercera diapositiva muestra una referencia generada con IA y un pedido ilustrativo; no muestra una foto real ni modifica la base de datos.
+
+Para mostrar **Volver al anfitrión**, configura la URL completa de su presentación en la constante `HOST_PRESENTATION_URL` del HTML. También se puede abrir con el parámetro `?anfitrion=URL_CODIFICADA#1`, conservando en la URL el fragmento de la diapositiva del anfitrión a la que se quiere volver. Ejemplo desde el documento del anfitrión:
+
+```js
+const miParte = new URL('./apicostura-hackaton.html', location.href);
+miParte.searchParams.set('anfitrion', location.href);
+location.href = miParte.href;
+```
+
+Adapta la ruta a la ubicación real del archivo. Sin un destino configurado el botón permanece oculto para evitar un enlace incorrecto. Se aceptan HTTP/HTTPS; los enlaces locales `file:` solo se habilitan si la presentación también está abierta como archivo local. El destino del anfitrión todavía debe proporcionarlo el equipo.
+
+Si quieren unir todos los HTML en una sola presentación, no concatenen documentos completos: deben unificar navegación, estilos, identificadores y eventos. Una alternativa es abrir este bloque por separado con el enlace de regreso. Los cuatro slides del panel van después de la explicación del sistema general. El HTML no sustituye el PDF y video de respaldo que solicita la organización; coordinar esos entregables a nivel del equipo.
 
 ## Conectar al software original
 
@@ -201,6 +231,10 @@ VALIDACIÓN Y ENTREGA
 18. Entrega cambios, migraciones, variables de entorno documentadas sin secretos,
     pasos de instalación y resultados de pruebas. Enumera cualquier pendiente.
     No declares integración terminada si solo funciona con datos simulados.
+19. Conserva apicostura-hackaton.html y GUION_HACKATON.md como material de
+    exposición separado del módulo operativo. Si enlazas el bloque al pitch
+    principal, configura la URL real de regreso mediante HOST_PRESENTATION_URL
+    o el parámetro anfitrion. No inventes el destino ni concatentes HTML completos.
 
 El repositorio NO contiene el backend original ni un servidor operativo.
 Para completar la integración necesitas acceso al código y configuración del
