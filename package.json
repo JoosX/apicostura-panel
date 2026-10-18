@@ -1,0 +1,14 @@
+{
+  "name": "apicostura-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Panel de pedidos de materiales para integrar al software de Apicostura",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "test": "node tests/mock.cjs && node tests/integration.cjs",
+    "check": "node --check src/apicostura-panel.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
